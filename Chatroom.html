@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <div>Don't refresh</div>
+    <style>
+        .submit{position: absolute;
+        left:1020px;
+        top:530px;
+        width:100px;
+        height:50px;
+    }
+    #scroll-container {
+    white-space: pre-line; /* This tells HTML to show the \n as a real line break */
+}
+.scroll-container{position: absolute;
+                left: 500px;
+                width: 500px;
+                overflow-y: auto;
+            height: 500px;
+            border: 2px solid red;
+        margin: 20px auto;
+    }
+ .text{position: absolute;
+            left:500px;
+        top: 530px ;
+    width:500px;
+height: 50px;
+border:2px solid green;
+margin:auto;}
+.label{position: absolute;
+            left:400px;
+        top: 540px ;}
+        /* Change the 'Your Name' label position */
+.label-name { 
+    position: absolute; 
+    left: 400px; 
+    top: 600px; /* Moved down from 540px */
+}
+
+    </style>
+</head>
+<body>
+    <div class="scroll-container" id="scroll-container">
+    </div>
+    <div class="box2">
+        
+    </div>
+    <label for="username" class="label">Type here:</label>
+    <input type="text" id="username" name="username" class="text">
+    <label for="name" class="label-name">Your Name: </label>
+    <input type="text" id="name" class="name-input" name="name">
+    <button id="namesubmit" class="namesubmit">Submit name</button>
+    <button id="submit" class="submit" type="button">Submit</button>
+    <button id="clear" class="clear" type="button">clear</button>
+    <div id="showname"></div>
+        
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io({
+  transports: ['websocket'],
+ reconnectionDelay: 500,    // Try reconnecting every 0.5 seconds (default is 1s)
+  reconnectionAttempts: Infinity
+});
+   const myBox = document.getElementById("scroll-container");
+   socket.on('load history', function(history) {
+    myBox.innerHTML = "";
+    history.forEach(msg => {
+        myBox.append("\n" + msg);
+    });
+    myBox.scrollTop = myBox.scrollHeight;
+});
+    myBox.scrollTop = myBox.scrollHeight;
+    let inputfield=document.getElementById("username");
+    document.getElementById("submit").onclick=function(){
+//chattext=document.getElementById("username").value
+let chattext=inputfield.value;
+
+//document.getElementById("scroll-container").append("\n",chattext) 
+const myBox = document.getElementById("scroll-container");
+
+//localStorage.setItem("savedChat", myBox.innerHTML);
+    
+// Add this line right after you append your new text
+myBox.scrollTop = myBox.scrollHeight;
+if (chattext) {
+    //myBox.append("\n" + chattext);
+      socket.emit('chat message', chattext);
+      let name=document.getElementById("name").value
+      inputfield.value = name+": ";
+  }}
+  document.getElementById("clear").onclick=function(){
+        myBox.innerHTML='';
+        //localStorage.removeItem("savedChat"); 
+    }
+document.getElementById("namesubmit").onclick=function(){
+    let name=document.getElementById("name").value
+document.getElementById("showname").textContent='Hi ' + name
+document.getElementById("username").value=name + ": " 
+
+}
+  // Run this as soon as the page loads
+/*window.onload = function() {
+    const myBox = document.getElementById("scroll-container");
+    const savedData = localStorage.getItem("savedChat");
+
+    if (savedData) {
+        // If we found saved data, put it back in the box
+        myBox.innerHTML = savedData;
+        
+        // Make sure it starts at the bottom
+        myBox.scrollTop = myBox.scrollHeight;
+    }
+};*/
+socket.on('chat message', function(msg) {
+    // Just add the text and a new line character
+    myBox.append("\n" + msg); 
+    
+    // Keep the box scrolled to the bottom
+    myBox.scrollTop = myBox.scrollHeight;
+    
+    // Save the text to your history
+   // localStorage.setItem("savedChat", myBox.innerHTML);
+});
+
+
+
+
+</script>
+    
+</body>
+</html>
