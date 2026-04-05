@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <div>Don't refresh</div>
     <style>
         .submit{position: absolute;
         left:1020px;
@@ -31,7 +30,7 @@ height: 50px;
 border:2px solid green;
 margin:auto;}
 .label{position: absolute;
-            left:400px;
+            left:280px;
         top: 540px ;}
         /* Change the 'Your Name' label position */
 .label-name { 
@@ -39,10 +38,19 @@ margin:auto;}
     left: 400px; 
     top: 600px; /* Moved down from 540px */
 }
-
+.chatname{
+    position: absolute;
+    top:530px;
+    left:350px;
+    width:150px;
+    height:50px;
+    border:2px solid red;
+    margin:auto;
+}
     </style>
 </head>
 <body>
+    <div>Don't refresh</div>
     <div class="scroll-container" id="scroll-container">
     </div>
     <div class="box2">
@@ -52,10 +60,11 @@ margin:auto;}
     <input type="text" id="username" name="username" class="text">
     <label for="name" class="label-name">Your Name: </label>
     <input type="text" id="name" class="name-input" name="name">
-    <button id="namesubmit" class="namesubmit">Submit name</button>
+    <button id="namesubmit" class="namesubmit"  type="button">Submit name</button>
     <button id="submit" class="submit" type="button">Submit</button>
     <button id="clear" class="clear" type="button">clear</button>
     <div id="showname"></div>
+    <div id="chatname" class="chatname"></div>
         
 <script src="/socket.io/socket.io.js"></script>
 <script>
@@ -76,10 +85,13 @@ margin:auto;}
     let inputfield=document.getElementById("username");
     document.getElementById("submit").onclick=function(){
 //chattext=document.getElementById("username").value
-let chattext=inputfield.value;
 
 //document.getElementById("scroll-container").append("\n",chattext) 
 const myBox = document.getElementById("scroll-container");
+let currentDisplayName = document.getElementById("chatname").textContent;
+    
+    // 2. Combine the name with the message
+    let chattext = currentDisplayName + " " + inputfield.value;
 
 //localStorage.setItem("savedChat", myBox.innerHTML);
     
@@ -88,17 +100,16 @@ myBox.scrollTop = myBox.scrollHeight;
 if (chattext) {
     //myBox.append("\n" + chattext);
       socket.emit('chat message', chattext);
-      let name=document.getElementById("name").value
-      inputfield.value = name+": ";
+      let name=document.getElementById("name").value;
   }}
   document.getElementById("clear").onclick=function(){
         myBox.innerHTML='';
         //localStorage.removeItem("savedChat"); 
     }
 document.getElementById("namesubmit").onclick=function(){
-    let name=document.getElementById("name").value
-document.getElementById("showname").textContent='Hi ' + name
-document.getElementById("username").value=name + ": " 
+    let currentname=document.getElementById("name").value;
+document.getElementById("showname").textContent='Hi ' + currentname;
+document.getElementById("chatname").textContent=currentname + ":";
 
 }
   // Run this as soon as the page loads

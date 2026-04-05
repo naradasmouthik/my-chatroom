@@ -27,7 +27,7 @@ io.on('connection', (socket) => {
 
   socket.on('chat message', (msg) => {
     chatHistory.push(msg); // 3. Save the new message to history
-    if (chatHistory.length > 5) {
+    if (chatHistory.length > 500) {
       chatHistory.shift(); 
     }
     io.emit('chat message', msg); 
